@@ -1,0 +1,23 @@
+# Fly.io Configuration for F and B Poultry Farm
+app = "fandbpoultry"
+primary_region = "fra"  # Frankfurt - closest to Ghana
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  PYTHON_VERSION = "3.11"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1

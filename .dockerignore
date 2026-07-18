@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.db
+*.json
+instance/
+.env
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Tests
+tests/
+test_*.py
+
+# Node modules (if any)
+node_modules/
+
+# Payment system (separate folder)
+payment-system/
+paystack-payment/
+
+# Database files
+*.db
+database.db
+payments.json
