@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - F and B Poultry Farm</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">F and B Poultry Farm</a>
+            <button class="menu-toggle" onclick="toggleMenu()">Menu</button>
+            <ul class="nav-links" id="nav-links"></ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 style="color:#2e7d32;">Order History</h1>
+        <p style="color:#888;margin-bottom:30px;">Complete history of all your orders</p>
+        <div id="order-history" class="table-container"></div>
+    </div>
+<footer class="footer">
+<p>F and B Poultry Farm Limited &copy; 2024</p>
+        <p style="font-weight: 600; color: #ffffff; margin-top: 10px;">
+            📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
+        </p>
+    </footer>
+    <script src="/js/main.js"></script>
+    <script>
+        if (!isLoggedIn()) window.location.href = '/pages/login.html';
+        async function loadOrderHistory() {
+            const container = document.getElementById('order-history');
+            try {
+                const orders = await apiCall('/orders');
+                if (orders.length === 0) { container.innerHTML = '<p style="text-align:center;color:#888;">No order history</p>'; return; }
+                let html = `<table><thead><tr><th>Order ID</th><th>Items</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th></tr></thead><tbody>`;
+                orders.forEach(order => {
+                    const statusClass = `status-${order.status}`;
+                    const itemsList = order.items ? order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ') : 'N/A';
+                    const isPaid = order.payment && order.payment.payment_status === 'completed';
+                    html += `<tr><td>#${order.id}</td><td><small>${itemsList}</small></td><td><strong>GHS ${order.total_amount.toFixed(2)}</strong></td><td class="${statusClass}">${order.status}</td><td>${isPaid ? 'Paid' : 'Pending'}</td><td>${new Date(order.order_date).toLocaleDateString()}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (error) { container.innerHTML = '<p style="color:#d32f2f;">Error loading history</p>'; }
+        }
+        document.addEventListener('DOMContentLoaded', loadOrderHistory);
+    </script>
+</body>
+</html>
+

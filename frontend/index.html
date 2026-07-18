@@ -1,0 +1,288 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F and B Poultry Farm Limited</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Homepage-specific styles */
+        .hero-welcome {
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1b5e20 0%, #388e3c 50%, #43a047 100%);
+            padding: 80px 20px;
+        }
+
+        .hero-welcome h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-welcome .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .payment-btn {
+            background: linear-gradient(135deg, #ff6f00 0%, #ff8f00 50%, #ffab00 100%) !important;
+            box-shadow: 0 4px 20px rgba(255, 111, 0, 0.4) !important;
+            animation: pulse-pay 2s infinite;
+        }
+
+        .payment-btn:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 30px rgba(255, 111, 0, 0.6) !important;
+        }
+
+        @keyframes pulse-pay {
+            0% { box-shadow: 0 4px 20px rgba(255, 111, 0, 0.4); }
+            50% { box-shadow: 0 4px 35px rgba(255, 111, 0, 0.7); }
+            100% { box-shadow: 0 4px 20px rgba(255, 111, 0, 0.4); }
+        }
+
+        .announcement-bar {
+            background: #ff6f00;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .about-section {
+            background: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .about-section h2 {
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+
+        .about-section p {
+            max-width: 800px;
+            margin: 0 auto;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .category-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .category-card {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .category-card .icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .category-card h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-welcome h1 {
+                font-size: 2rem;
+            }
+
+            .category-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== NAVIGATION BAR ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                F and B Poultry Farm
+            </a>
+            <div class="contact-info" style="font-size: 0.85rem; color: #ffffff; font-weight: 600;">
+                📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
+            </div>
+            <button class="menu-toggle" onclick="toggleMenu()">Menu</button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/pages/products.html">Products</a></li>
+                <li><a href="/pages/payment.html" style="color: #ffab00; font-weight: 700;">💳 Pay</a></li>
+                <li><a href="/pages/login.html">Login</a></li>
+                <li><a href="/pages/register.html">Register</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ========== ANNOUNCEMENT BAR ========== -->
+    <div class="announcement-bar" id="announcement-bar">
+        Welcome to F and B Poultry Farm - Fresh & Quality Products!
+    </div>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section class="hero-welcome">
+        <h1>F and B Poultry Farm</h1>
+        <p class="tagline">Fresh Eggs, Healthy Chickens & Quality Feeds</p>
+        <div class="hero-buttons">
+            <a href="/pages/products.html" class="btn btn-primary">Browse Products</a>
+            <a href="/pages/payment.html" class="btn btn-primary payment-btn">💳 Pay Now</a>
+            <a href="/pages/register.html" class="btn btn-secondary">Join Us Today</a>
+        </div>
+    </section>
+
+    <!-- ========== ABOUT US ========== -->
+    <section class="about-section">
+        <h2>Welcome to F and B Poultry Farm Limited</h2>
+        <p>
+            We are a leading poultry farm dedicated to providing the highest quality 
+            eggs, chickens, and poultry feeds. Our farm uses modern farming techniques 
+            to ensure you get only the best products. Whether you're a household looking 
+            for fresh eggs or a farmer needing quality feeds, we've got you covered!
+        </p>
+    </section>
+
+    <!-- ========== PRODUCT CATEGORIES ========== -->
+    <div class="container">
+        <h2 class="section-title">Our Products</h2>
+        <div class="category-cards">
+            <div class="category-card" onclick="window.location.href='/pages/products.html?category=eggs'">
+                <div class="icon">[Egg]</div>
+                <h3>Fresh Eggs</h3>
+                <p>Farm-fresh eggs from healthy chickens</p>
+            </div>
+            <div class="category-card" onclick="window.location.href='/pages/products.html?category=chickens'">
+                <div class="icon">[Chicken]</div>
+                <h3>Healthy Chickens</h3>
+                <p>Quality broilers and layers</p>
+            </div>
+            <div class="category-card" onclick="window.location.href='/pages/products.html?category=feeds'">
+                <div class="icon">[Feed]</div>
+                <h3>Poultry Feeds</h3>
+                <p>Nutritious feeds for your poultry</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FEATURES ========== -->
+    <div class="container">
+        <h2 class="section-title">Why Choose Us?</h2>
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">[OK]</div>
+                <h3>Quality Guaranteed</h3>
+                <p>All our products meet the highest quality standards</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">[Delivery]</div>
+                <h3>Fast Delivery</h3>
+                <p>We deliver your orders promptly and safely</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">[Prices]</div>
+                <h3>Best Prices</h3>
+                <p>Competitive prices on all our poultry products</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">[Support]</div>
+                <h3>Customer Support</h3>
+                <p>We're always here to help you</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== ANNOUNCEMENTS SECTION ========== -->
+    <div class="container">
+        <h2 class="section-title">Latest Announcements</h2>
+        <div id="ads-container"></div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+        <p>F and B Poultry Farm Limited - All Rights Reserved</p>
+        <p style="font-size: 1.1rem; font-weight: 600; color: #333333; margin-top: 10px;">
+            📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
+        </p>
+    </footer>
+
+    <!-- Load JavaScript -->
+    <script src="js/main.js"></script>
+    <script>
+        // Load announcements from the backend
+        async function loadAnnouncements() {
+            const container = document.getElementById('ads-container');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/ads');
+                const ads = await response.json();
+                
+                if (ads.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;color:#888;">No announcements yet</p>';
+                    return;
+                }
+                
+                let html = '<div class="grid">';
+                ads.forEach(ad => {
+                    html += `
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="card-title">${ad.title}</h3>
+                                <p class="card-text">${ad.content}</p>
+                                <small style="color:#888;">
+                                    Posted on ${new Date(ad.created_at).toLocaleDateString()}
+                                </small>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+                
+            } catch (error) {
+                container.innerHTML = '<p style="text-align:center;color:#888;">Loading announcements...</p>';
+            }
+        }
+        
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnnouncements();
+        });
+    </script>
+</body>
+</html>

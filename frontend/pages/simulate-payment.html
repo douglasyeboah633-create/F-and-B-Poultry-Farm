@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulated Payment - F and B Poultry Farm</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        .amount-box {
+            background: #e8f5e9;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        .amount { font-size: 2.5rem; color: #2e7d32; font-weight: 700; }
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px;
+            border: none;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); }
+        .btn-success { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); }
+        .btn-danger { background: linear-gradient(135deg, #e53935 0%, #c62828 100%); }
+        .info { color: #666; margin: 20px 0; font-size: 0.9rem; }
+        .spinner { display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Receiver Info Styling */
+        .receiver-info {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .info-value {
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Mobile Money Payment</h1>
+        <p style="color:#666;margin-bottom:20px;">Simulate Mobile Money Payment</p>
+        
+        <div class="amount-box">
+            <p style="color:#666;margin-bottom:10px;">Amount to Pay:</p>
+            <div class="amount" id="amount-display">GHS 0.00</div>
+        </div>
+
+        <p style="color:#888;margin-bottom:20px;">Reference: <span id="reference-display">N/A</span></p>
+
+        <!-- Receiver Information -->
+        <div class="receiver-info">
+            <h3 style="color:#2e7d32;margin-bottom:15px;">💰 Payment Details</h3>
+            <div class="info-row">
+                <span class="info-label">Paying to:</span>
+                <span class="info-value" id="receiver-name">F and B Poultry Farm Limited</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Receiver Phone:</span>
+                <span class="info-value" id="receiver-phone">0530043569</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Your Phone:</span>
+                <span class="info-value" id="customer-phone">N/A</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Provider:</span>
+                <span class="info-value" id="provider-name">N/A</span>
+            </div>
+        </div>
+
+        <div style="margin-top:30px;">
+            <button onclick="simulateSuccess()" class="btn btn-success" id="pay-btn">
+                <span id="btn-text">✅ Confirm Payment</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </div>
+
+        <div class="info">
+            <p>📱 In real mode, you'll receive a prompt on your phone</p>
+            <p>Enter your Mobile Money PIN to confirm payment</p>
+            <p style="margin-top:10px;font-size:0.85rem;">Test Mode - No real money is charged</p>
+        </div>
+    </div>
+
+    <script>
+        // API base URL - using the Flask server (no separate server needed!)
+        const PAYMENT_API = '/api';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const reference = urlParams.get('reference');
+        const amount = urlParams.get('amount');
+        const phone = urlParams.get('phone');
+        const provider = urlParams.get('provider');
+
+        // Map provider codes to full names
+        const providerNames = {
+            'mtn': 'MTN Mobile Money',
+            'vodafone': 'Vodafone Cash',
+            'airteltigo': 'AirtelTigo Money'
+        };
+
+        document.getElementById('reference-display').textContent = reference || 'N/A';
+        document.getElementById('amount-display').textContent = `GHS ${parseFloat(amount || 0).toFixed(2)}`;
+        document.getElementById('customer-phone').textContent = phone || 'N/A';
+        document.getElementById('provider-name').textContent = providerNames[provider] || provider || 'N/A';
+
+        async function simulateSuccess() {
+            const btn = document.getElementById('pay-btn');
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btn-text');
+            
+            btn.disabled = true;
+            btnText.textContent = 'Processing...';
+            spinner.style.display = 'block';
+
+            try {
+                const response = await fetch(`${PAYMENT_API}/simulate-payment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reference: reference })
+                });
+                const result = await response.json();
+
+                if (result.status) {
+                    // Redirect to success page on the poultry farm
+                    window.location.href = `/pages/success.html?reference=${reference}`;
+                } else {
+                    alert('Payment simulation failed: ' + result.message);
+                    btn.disabled = false;
+                    btnText.textContent = '✅ Simulate Successful Payment';
+                    spinner.style.display = 'none';
+                }
+            } catch (error) {
+                alert('Error: ' + error.message + '\n\nMake sure the server is running at http://localhost:5000');
+                btn.disabled = false;
+                btnText.textContent = '✅ Confirm Payment';
+                spinner.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

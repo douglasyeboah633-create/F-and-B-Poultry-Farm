@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers - F and B Poultry Farm</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+<a href="/" class="nav-logo">F and B Poultry Farm</a>
+<button class="menu-toggle" onclick="toggleMenu()">Menu</button>
+            <ul class="nav-links" id="nav-links"></ul>
+        </div>
+    </nav>
+    <div class="container">
+<h1 style="color:#2e7d32;">Manage Customers</h1>
+        <p style="color:#888;margin-bottom:30px;">View registered customers</p>
+        <div id="customers-table" class="table-container"></div>
+    </div>
+<footer class="footer">
+<p>F and B Poultry Farm Limited &copy; 2024</p>
+        <p style="font-weight: 600; color: #ffffff; margin-top: 10px;">
+            📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
+        </p>
+    </footer>
+    <script src="/js/main.js"></script>
+    <script>
+        if (!isLoggedIn() || !isAdmin()) window.location.href = '/pages/login.html';
+        async function loadCustomers() {
+            const container = document.getElementById('customers-table');
+            try {
+                const customers = await apiCall('/customers');
+                if (customers.length === 0) { container.innerHTML = '<p style="text-align:center;color:#888;">No customers registered yet</p>'; return; }
+                let html = `<table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th></tr></thead><tbody>`;
+                customers.forEach(c => {
+                    html += `<tr><td>#${c.id}</td><td><strong>${c.username}</strong></td><td>${c.email}</td><td>${c.phone || 'N/A'}</td><td>${new Date(c.created_at).toLocaleDateString()}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (error) { container.innerHTML = '<p style="color:#d32f2f;">Error loading customers</p>'; }
+        }
+        document.addEventListener('DOMContentLoaded', loadCustomers);
+    </script>
+</body>
+</html>
+

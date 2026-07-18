@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - F and B Poultry Farm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .transaction-details {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .amount {
+            color: #2e7d32;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px;
+            border: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .info-box p {
+            color: #1976d2;
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>Payment Successful!</h1>
+        <p class="subtitle">Thank you for your payment. Your transaction has been completed.</p>
+
+        <!-- Transaction Details -->
+        <div class="transaction-details">
+            <div class="detail-row">
+                <span class="detail-label">Reference:</span>
+                <span class="detail-value" id="reference">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Customer Name:</span>
+                <span class="detail-value" id="name">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value" id="email">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Phone:</span>
+                <span class="detail-value" id="phone">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Provider:</span>
+                <span class="detail-value" id="provider">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Amount Paid:</span>
+                <span class="detail-value amount" id="amount">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Paid to:</span>
+                <span class="detail-value" style="color: #2e7d32; font-weight: 600;" id="receiver">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Receiver Phone:</span>
+                <span class="detail-value" id="receiver-phone">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value" style="color: #2e7d32; font-weight: 700;" id="status">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value" id="date">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <p><strong>📧 Confirmation email sent!</strong></p>
+            <p>A receipt has been sent to your email address. Please save it for your records.</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div>
+            <a href="/pages/payment.html" class="btn">Make Another Payment</a>
+            <button onclick="window.print()" class="btn btn-secondary">Print Receipt</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // LOAD PAYMENT DETAILS FROM URL
+        // ============================================
+
+        // Get payment reference from URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const reference = urlParams.get('reference');
+
+        if (reference) {
+            // Verify payment with backend
+            verifyPayment(reference);
+        } else {
+            // No reference provided
+            document.getElementById('reference').textContent = 'N/A';
+            document.getElementById('name').textContent = 'N/A';
+            document.getElementById('email').textContent = 'N/A';
+            document.getElementById('amount').textContent = 'N/A';
+            document.getElementById('status').textContent = 'Unknown';
+            document.getElementById('date').textContent = 'N/A';
+        }
+
+        // ============================================
+        // VERIFY PAYMENT FUNCTION
+        // ============================================
+
+        // API base URL - using the Flask server (no separate server needed!)
+        const PAYMENT_API = '/api';
+
+        async function verifyPayment(reference) {
+            try {
+                const response = await fetch(`${PAYMENT_API}/verify-payment?reference=${reference}`);
+                const result = await response.json();
+
+                if (result.status && result.data) {
+                    // Update page with payment details
+                    document.getElementById('reference').textContent = result.data.reference;
+                    document.getElementById('name').textContent = result.data.name;
+                    document.getElementById('email').textContent = result.data.email;
+                    document.getElementById('phone').textContent = result.data.phone || 'N/A';
+                    document.getElementById('provider').textContent = result.data.provider || 'N/A';
+                    document.getElementById('amount').textContent = `GHS ${result.data.amount.toFixed(2)}`;
+                    document.getElementById('receiver').textContent = result.data.receiver || 'F and B Poultry Farm Limited';
+                    document.getElementById('receiver-phone').textContent = result.data.receiverPhone || '054411993';
+                    document.getElementById('status').textContent = result.data.status.charAt(0).toUpperCase() + result.data.status.slice(1);
+                    
+                    if (result.data.paidAt) {
+                        const date = new Date(result.data.paidAt);
+                        document.getElementById('date').textContent = date.toLocaleString();
+                    } else {
+                        document.getElementById('date').textContent = new Date().toLocaleString();
+                    }
+                } else {
+                    // Verification failed
+                    document.getElementById('status').textContent = 'Verification Failed';
+                    document.getElementById('status').style.color = '#d32f2f';
+                }
+            } catch (error) {
+                console.error('Error verifying payment:', error);
+                document.getElementById('status').textContent = 'Error';
+                document.getElementById('status').style.color = '#d32f2f';
+            }
+        }
+    </script>
+</body>
+</html>

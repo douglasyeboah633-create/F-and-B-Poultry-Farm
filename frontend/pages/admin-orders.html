@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Orders - F and B Poultry Farm</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+<a href="/" class="nav-logo">F and B Poultry Farm</a>
+<button class="menu-toggle" onclick="toggleMenu()">Menu</button>
+            <ul class="nav-links" id="nav-links"></ul>
+        </div>
+    </nav>
+    <div class="container">
+<h1 style="color:#2e7d32;">All Orders</h1>
+        <p style="color:#888;margin-bottom:30px;">View and manage customer orders</p>
+        <div id="all-orders" class="table-container"></div>
+    </div>
+<footer class="footer">
+<p>F and B Poultry Farm Limited &copy; 2024</p>
+        <p style="font-weight: 600; color: #ffffff; margin-top: 10px;">
+            📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
+        </p>
+    </footer>
+    <script src="/js/main.js"></script>
+    <script>
+        if (!isLoggedIn() || !isAdmin()) window.location.href = '/pages/login.html';
+        async function loadAllOrders() {
+            const container = document.getElementById('all-orders');
+            try {
+                const orders = await apiCall('/orders');
+                if (orders.length === 0) { container.innerHTML = '<p style="text-align:center;color:#888;">No orders yet</p>'; return; }
+                let html = `<table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>`;
+                orders.forEach(order => {
+                    const statusClass = `status-${order.status}`;
+                    const itemsList = order.items ? order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ') : 'N/A';
+                    html += `<tr>
+                        <td>#${order.id}</td>
+                        <td>${order.customer_name}</td>
+                        <td><small>${itemsList}</small></td>
+                        <td><strong>GHS ${order.total_amount.toFixed(2)}</strong></td>
+                        <td class="${statusClass}">${order.status}</td>
+                        <td>${new Date(order.order_date).toLocaleDateString()}</td>
+                        <td>
+                            <select onchange="updateStatus(${order.id}, this.value)" class="form-control" style="padding:4px;width:120px;">
+                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                            </select>
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (error) { container.innerHTML = '<p style="color:#d32f2f;">Error loading orders</p>'; }
+        }
+        async function updateStatus(orderId, status) {
+            try { await apiCall(`/orders/${orderId}/status`, 'PUT', { status }); alert('Status updated!'); }
+            catch (error) { alert('Error: ' + error.message); }
+        }
+        document.addEventListener('DOMContentLoaded', loadAllOrders);
+    </script>
+</body>
+</html>
+

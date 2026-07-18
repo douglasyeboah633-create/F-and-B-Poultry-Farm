@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - F and B Poultry Farm</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+<a href="/" class="nav-logo">F and B Poultry Farm</a>
+<button class="menu-toggle" onclick="toggleMenu()">Menu</button>
+            <ul class="nav-links" id="nav-links"></ul>
+        </div>
+    </nav>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div>
+<button class="close-btn" onclick="closeCart()">X</button>
+<h3 style="color:#2e7d32;">Your Cart</h3>
+        </div>
+        <div id="cart-items"></div>
+        <div class="cart-total" id="cart-total">Total: GHS 0.00</div>
+        <button class="btn btn-primary" style="width:100%;margin-bottom:10px;" onclick="checkout()">Proceed to Checkout</button>
+        <button class="btn btn-danger" style="width:100%;" onclick="clearCart()">Clear Cart</button>
+    </div>
+
+    <div class="container">
+        <div class="flex-between">
+            <h1 style="color:#2e7d32;">Our Products</h1>
+            <div>
+                <button class="btn btn-secondary btn-small" onclick="filterProducts('all')">All</button>
+<button class="btn btn-secondary btn-small" onclick="filterProducts('eggs')">Eggs</button>
+<button class="btn btn-secondary btn-small" onclick="filterProducts('chickens')">Chickens</button>
+<button class="btn btn-secondary btn-small" onclick="filterProducts('feeds')">Feeds</button>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading products...</p>
+        </div>
+        
+        <div id="products-container" class="grid" style="margin-top:30px;"></div>
+    </div>
+
+    <footer class="footer">
+<p>F and B Poultry Farm Limited &copy; 2024</p>
+        <p style="font-weight: 600; color: #ffffff; margin-top: 10px;">
+            📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
+        </p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        let allProducts = [];
+        
+        async function loadProducts() {
+            const container = document.getElementById('products-container');
+            const loading = document.getElementById('loading');
+            
+            try {
+                loading.style.display = 'block';
+                
+                const params = new URLSearchParams(window.location.search);
+                const category = params.get('category');
+                
+                let url = '/products';
+                if (category) {
+                    url += `?category=${category}`;
+                }
+                
+                const response = await fetch(`http://localhost:5000/api${url}`);
+                allProducts = await response.json();
+                
+                loading.style.display = 'none';
+                displayProducts(allProducts);
+                
+            } catch (error) {
+                loading.innerHTML = '<p>Error loading products. Make sure the server is running.</p>';
+            }
+        }
+        
+        function displayProducts(products) {
+            const container = document.getElementById('products-container');
+            
+            if (products.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:#888;">No products available</p>';
+                return;
+            }
+            
+            let html = '';
+            products.forEach(product => {
+let emoji = '';
+                
+                const stockStatus = product.stock_quantity > 0 
+                    ? `In Stock (${product.stock_quantity})` 
+                    : 'Out of Stock';
+                
+                html += `
+                    <div class="card">
+<div class="card-img" style="display:flex;align-items:center;justify-content:center;font-size:5rem;background:#e8f5e9;">
+                            <span style="font-size:3rem;color:#2e7d32;">[${product.category.toUpperCase()}]</span>
+                        </div>
+                        <div class="card-body">
+                            <span class="badge">${product.category}</span>
+                            <h3 class="card-title">${product.name}</h3>
+                            <p class="card-text">${product.description || 'No description'}</p>
+                            <div class="card-price">GHS ${product.price.toFixed(2)}</div>
+                            <div class="card-stock">${stockStatus}</div>
+                            ${product.stock_quantity > 0 ? `
+                                <div class="form-group" style="margin-bottom:10px;">
+                                    <input type="number" id="qty-${product.id}" class="form-control" value="1" min="1" max="${product.stock_quantity}" style="width:80px;display:inline;">
+                                </div>
+<button onclick="addToCart(${product.id}, parseInt(document.getElementById('qty-${product.id}').value))" class="btn btn-primary" style="width:100%;">
+                                    Add to Cart
+                                </button>
+                            ` : `
+                                <button class="btn btn-danger" style="width:100%;" disabled>Out of Stock</button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function filterProducts(category) {
+            if (category === 'all') {
+                displayProducts(allProducts);
+            } else {
+                const filtered = allProducts.filter(p => p.category === category);
+                displayProducts(filtered);
+            }
+        }
+        
+        async function checkout() {
+            if (!isLoggedIn()) {
+                alert('Please login first');
+                window.location.href = '/pages/login.html';
+                return;
+            }
+            
+            try {
+                const result = await apiCall('/orders', 'POST');
+                alert('Order placed successfully!');
+                closeCart();
+                window.location.href = '/pages/customer-dashboard.html';
+            } catch (error) {
+                alert('Error placing order: ' + error.message);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+        });
+    </script>
+</body>
+</html>
+

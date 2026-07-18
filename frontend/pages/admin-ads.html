@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advertisements - F and B Poultry Farm</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+<a href="/" class="nav-logo">F and B Poultry Farm</a>
+<button class="menu-toggle" onclick="toggleMenu()">Menu</button>
+            <ul class="nav-links" id="nav-links"></ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="flex-between">
+<h1 style="color:#2e7d32;">Post Announcements</h1>
+            <button onclick="showAddAdModal()" class="btn btn-primary">+ New Announcement</button>
+        </div>
+        <p style="color:#888;margin-bottom:30px;">Share news and updates with your customers</p>
+        <div id="ads-list" class="table-container"></div>
+    </div>
+    <div class="modal-overlay" id="ad-modal">
+        <div class="modal">
+            <h2 class="modal-title">New Announcement</h2>
+            <form id="ad-form">
+                <div class="form-group">
+                    <label for="ad-title">Title</label>
+                    <input type="text" id="ad-title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="ad-content">Content</label>
+                    <textarea id="ad-content" class="form-control" required></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Post</button>
+                    <button type="button" onclick="closeAdModal()" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<footer class="footer">
+<p>F and B Poultry Farm Limited &copy; 2024</p>
+        <p style="font-weight: 600; color: #ffffff; margin-top: 10px;">
+            📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
+        </p>
+    </footer>
+    <script src="/js/main.js"></script>
+    <script>
+        if (!isLoggedIn() || !isAdmin()) window.location.href = '/pages/login.html';
+        async function loadAds() {
+            const container = document.getElementById('ads-list');
+            try {
+                const ads = await apiCall('/ads');
+                if (ads.length === 0) { container.innerHTML = '<p style="text-align:center;color:#888;">No announcements yet</p>'; return; }
+                let html = `<table><thead><tr><th>Title</th><th>Content</th><th>Date</th><th>Action</th></tr></thead><tbody>`;
+                ads.forEach(ad => {
+                    html += `<tr><td><strong>${ad.title}</strong></td><td>${ad.content}</td><td>${new Date(ad.created_at).toLocaleDateString()}</td><td><button onclick="deleteAd(${ad.id})" class="btn btn-danger btn-small">Delete</button></td></tr>`;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (error) { container.innerHTML = '<p style="color:#d32f2f;">Error loading announcements</p>'; }
+        }
+        function showAddAdModal() { document.getElementById('ad-modal').classList.add('active'); }
+        function closeAdModal() { document.getElementById('ad-modal').classList.remove('active'); }
+        document.getElementById('ad-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = { title: document.getElementById('ad-title').value, content: document.getElementById('ad-content').value };
+            try { await apiCall('/ads', 'POST', data); alert('Announcement posted!'); closeAdModal(); document.getElementById('ad-form').reset(); loadAds(); }
+            catch (error) { alert('Error: ' + error.message); }
+        });
+        async function deleteAd(id) {
+            if (!confirm('Delete this announcement?')) return;
+            try { await apiCall(`/ads/${id}`, 'DELETE'); alert('Deleted!'); loadAds(); }
+            catch (error) { alert('Error: ' + error.message); }
+        }
+        document.addEventListener('DOMContentLoaded', loadAds);
+    </script>
+</body>
+</html>
+
