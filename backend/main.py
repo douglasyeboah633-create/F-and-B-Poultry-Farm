@@ -29,7 +29,14 @@ CORS(app)
 # ----- CONFIGURATION -----
 # Database location (SQLite file will be created in the backend folder)
 basedir = Path(__file__).resolve().parent
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{basedir / "database.db"}'
+
+# Use /tmp directory for Vercel (writable), otherwise use local directory
+if os.environ.get('VERCEL'):
+    db_path = '/tmp/database.db'
+else:
+    db_path = basedir / 'database.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Secret key for JWT tokens (in production, use a real secret)
