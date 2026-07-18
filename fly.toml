@@ -1,23 +1,28 @@
-# Fly.io Configuration for F and B Poultry Farm
-app = "fandbpoultry"
-primary_region = "fra"  # Frankfurt - closest to Ghana
+# fly.toml app configuration file generated for f-and-b-poultry-farm on 2026-07-18T18:45:20Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'f-and-b-poultry-farm'
+primary_region = 'fra'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [env]
-  PORT = "8080"
-  PYTHON_VERSION = "3.11"
+  PORT = '8080'
+  PYTHON_VERSION = '3.11'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
 
 [[vm]]
-  memory = "256mb"
-  cpu_kind = "shared"
+  memory = '256mb'
+  cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 256
