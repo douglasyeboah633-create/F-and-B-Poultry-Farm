@@ -30,8 +30,8 @@ CORS(app)
 # Database location (SQLite file will be created in the backend folder)
 basedir = Path(__file__).resolve().parent
 
-# Use /tmp directory for Vercel (writable), otherwise use local directory
-if os.environ.get('VERCEL'):
+# Use /tmp directory for cloud platforms (writable), otherwise use local directory
+if os.environ.get('FLY_APP_NAME') or os.environ.get('VERCEL'):
     db_path = '/tmp/database.db'
 else:
     db_path = basedir / 'database.db'

@@ -28,4 +28,4 @@ RUN mkdir -p /app/backend
 EXPOSE 8080
 
 # Start the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "backend.main:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--timeout", "120", "backend.main:app"]
