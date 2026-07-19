@@ -4,11 +4,12 @@ WSGI entry point for gunicorn - Initializes database on startup
 import os
 import sys
 
-# Add parent directory to path
+# Add parent directory to path so we can import from backend/
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from backend.main import app, db, bcrypt
-from backend.models import User
+# Import directly (no backend. prefix since we're inside backend/)
+from main import app, db, bcrypt
+from models import User
 
 # Initialize database tables on startup
 with app.app_context():
