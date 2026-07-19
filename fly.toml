@@ -1,5 +1,5 @@
 # Fly.io Configuration for F and B Poultry Farm
-app = "fandbpoultry"
+app = "fandpoultryfam"
 primary_region = "fra"  # Frankfurt - closest to Ghana
 
 [build]
