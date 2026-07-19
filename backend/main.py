@@ -54,6 +54,37 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 
+# ============================================================
+# INIT DATABASE ON FIRST REQUEST
+# ============================================================
+@app.before_request
+def init_db():
+    """Initialize database on first request"""
+    if not hasattr(app, 'db_initialized'):
+        with app.app_context():
+            try:
+                db.create_all()
+                print("[OK] Database tables created!")
+                
+                # Create admin if not exists
+                admin = User.query.filter_by(role='admin').first()
+                if not admin:
+                    admin_password = bcrypt.generate_password_hash('Hector1234').decode('utf-8')
+                    admin = User(
+                        username='Douglas Yeboah',
+                        email='douglasyeboah633@mail.com',
+                        password_hash=admin_password,
+                        role='admin',
+                        phone='054411993',
+                        is_verified=True
+                    )
+                    db.session.add(admin)
+                    db.session.commit()
+                    print("[OK] Admin created!")
+            except Exception as e:
+                print(f"[WARNING] DB init: {e}")
+        app.db_initialized = True
+
 
 # ============================================================
 # HELPER FUNCTIONS
