@@ -27,5 +27,5 @@ RUN mkdir -p /app/backend
 # Expose port 8080 (Fly.io uses this)
 EXPOSE 8080
 
-# Start the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--timeout", "120", "backend.main:app"]
+# Start the application using wsgi.py (handles database init)
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--timeout", "120", "--chdir", "/app/backend", "wsgi:application"]
