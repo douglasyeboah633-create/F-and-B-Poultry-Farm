@@ -15,6 +15,19 @@
             align-items: center;
             background: linear-gradient(135deg, #1b5e20 0%, #388e3c 50%, #43a047 100%);
             padding: 80px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-welcome::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><path d="M50 10 L60 40 L90 40 L65 60 L75 90 L50 70 L25 90 L35 60 L10 40 L40 40 Z" fill="white"/></svg>') repeat;
+            background-size: 60px 60px;
         }
 
         .hero-welcome h1 {
@@ -22,12 +35,16 @@
             font-weight: 800;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
         }
 
         .hero-welcome .tagline {
             font-size: 1.2rem;
             opacity: 0.9;
             margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-buttons {
@@ -35,23 +52,8 @@
             gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
-        }
-
-        .payment-btn {
-            background: linear-gradient(135deg, #ff6f00 0%, #ff8f00 50%, #ffab00 100%) !important;
-            box-shadow: 0 4px 20px rgba(255, 111, 0, 0.4) !important;
-            animation: pulse-pay 2s infinite;
-        }
-
-        .payment-btn:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 8px 30px rgba(255, 111, 0, 0.6) !important;
-        }
-
-        @keyframes pulse-pay {
-            0% { box-shadow: 0 4px 20px rgba(255, 111, 0, 0.4); }
-            50% { box-shadow: 0 4px 35px rgba(255, 111, 0, 0.7); }
-            100% { box-shadow: 0 4px 20px rgba(255, 111, 0, 0.4); }
+            position: relative;
+            z-index: 1;
         }
 
         .announcement-bar {
@@ -97,16 +99,29 @@
 
         .category-card {
             background: white;
-            padding: 40px 20px;
+            padding: 0;
             border-radius: 15px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
+            overflow: hidden;
         }
 
         .category-card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .category-card .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .category-card .card-body {
+            padding: 25px 20px;
         }
 
         .category-card .icon {
@@ -117,6 +132,73 @@
         .category-card h3 {
             color: #2e7d32;
             margin-bottom: 10px;
+        }
+
+        .category-card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* SVG Icon styles for features */
+        .feature-icon-svg {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover .feature-icon-svg {
+            transform: scale(1.1);
+        }
+
+        .feature-icon-svg svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Product image placeholders with gradient backgrounds */
+        .product-img-wrapper {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .product-img-wrapper.eggs {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+        }
+
+        .product-img-wrapper.chickens {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        }
+
+        .product-img-wrapper.feeds {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        }
+
+        .product-img-wrapper svg {
+            width: 100px;
+            height: 100px;
+            opacity: 0.8;
+        }
+
+        .product-img-wrapper .label {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
         @media (max-width: 768px) {
@@ -137,14 +219,10 @@
             <a href="/" class="nav-logo">
                 F and B Poultry Farm
             </a>
-            <div class="contact-info" style="font-size: 0.85rem; color: #ffffff; font-weight: 600;">
-                📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
-            </div>
             <button class="menu-toggle" onclick="toggleMenu()">Menu</button>
             <ul class="nav-links" id="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/pages/products.html">Products</a></li>
-                <li><a href="/pages/payment.html" style="color: #ffab00; font-weight: 700;">💳 Pay</a></li>
                 <li><a href="/pages/login.html">Login</a></li>
                 <li><a href="/pages/register.html">Register</a></li>
             </ul>
@@ -162,7 +240,6 @@
         <p class="tagline">Fresh Eggs, Healthy Chickens & Quality Feeds</p>
         <div class="hero-buttons">
             <a href="/pages/products.html" class="btn btn-primary">Browse Products</a>
-            <a href="/pages/payment.html" class="btn btn-primary payment-btn">💳 Pay Now</a>
             <a href="/pages/register.html" class="btn btn-secondary">Join Us Today</a>
         </div>
     </section>
@@ -183,19 +260,64 @@
         <h2 class="section-title">Our Products</h2>
         <div class="category-cards">
             <div class="category-card" onclick="window.location.href='/pages/products.html?category=eggs'">
-                <div class="icon">[Egg]</div>
-                <h3>Fresh Eggs</h3>
-                <p>Farm-fresh eggs from healthy chickens</p>
+                <div class="product-img-wrapper eggs">
+                    <!-- Egg SVG Icon -->
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="50" cy="55" rx="30" ry="40" fill="#FFB74D" stroke="#F57C00" stroke-width="2"/>
+                        <ellipse cx="50" cy="45" rx="15" ry="20" fill="#FFE0B2" opacity="0.5"/>
+                        <ellipse cx="50" cy="40" rx="8" ry="10" fill="#FFF8E1" opacity="0.6"/>
+                    </svg>
+                    <span class="label">Fresh</span>
+                </div>
+                <div class="card-body">
+                    <h3>Fresh Eggs</h3>
+                    <p>Farm-fresh eggs from healthy chickens</p>
+                </div>
             </div>
             <div class="category-card" onclick="window.location.href='/pages/products.html?category=chickens'">
-                <div class="icon">[Chicken]</div>
-                <h3>Healthy Chickens</h3>
-                <p>Quality broilers and layers</p>
+                <div class="product-img-wrapper chickens">
+                    <!-- Chicken SVG Icon -->
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="50" cy="60" rx="25" ry="20" fill="#FFCC80"/>
+                        <circle cx="50" cy="40" r="18" fill="#FFCC80"/>
+                        <circle cx="50" cy="40" r="12" fill="#FFE0B2"/>
+                        <circle cx="44" cy="36" r="2" fill="#333"/>
+                        <circle cx="56" cy="36" r="2" fill="#333"/>
+                        <polygon points="50,30 45,20 55,20" fill="#FF8A65"/>
+                        <path d="M30 60 L20 75 L35 65 Z" fill="#FF8A65"/>
+                        <path d="M70 60 L80 75 L65 65 Z" fill="#FF8A65"/>
+                        <path d="M45 75 L50 90 L55 75" fill="#FF8A65"/>
+                        <ellipse cx="38" cy="55" rx="8" ry="5" fill="#FFAB91" transform="rotate(-20 38 55)"/>
+                        <ellipse cx="62" cy="55" rx="8" ry="5" fill="#FFAB91" transform="rotate(20 62 55)"/>
+                    </svg>
+                    <span class="label">Healthy</span>
+                </div>
+                <div class="card-body">
+                    <h3>Healthy Chickens</h3>
+                    <p>Quality broilers and layers</p>
+                </div>
             </div>
             <div class="category-card" onclick="window.location.href='/pages/products.html?category=feeds'">
-                <div class="icon">[Feed]</div>
-                <h3>Poultry Feeds</h3>
-                <p>Nutritious feeds for your poultry</p>
+                <div class="product-img-wrapper feeds">
+                    <!-- Feed SVG Icon -->
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="25" y="35" width="50" height="45" rx="5" fill="#8D6E63" stroke="#5D4037" stroke-width="2"/>
+                        <rect x="30" y="40" width="40" height="35" rx="3" fill="#A1887F"/>
+                        <circle cx="40" cy="52" r="4" fill="#FFB74D"/>
+                        <circle cx="55" cy="48" r="3" fill="#FFCC80"/>
+                        <circle cx="48" cy="60" r="4" fill="#FFE0B2"/>
+                        <circle cx="60" cy="58" r="3" fill="#FFB74D"/>
+                        <circle cx="38" cy="65" r="3" fill="#FFCC80"/>
+                        <rect x="40" y="20" width="20" height="20" rx="3" fill="#66BB6A" stroke="#388E3C" stroke-width="2"/>
+                        <line x1="50" y1="20" x2="50" y2="10" stroke="#388E3C" stroke-width="2"/>
+                        <line x1="45" y1="12" x2="55" y2="12" stroke="#388E3C" stroke-width="2"/>
+                    </svg>
+                    <span class="label">Nutritious</span>
+                </div>
+                <div class="card-body">
+                    <h3>Poultry Feeds</h3>
+                    <p>Nutritious feeds for your poultry</p>
+                </div>
             </div>
         </div>
     </div>
@@ -205,22 +327,63 @@
         <h2 class="section-title">Why Choose Us?</h2>
         <div class="features">
             <div class="feature-card">
-                <div class="feature-icon">[OK]</div>
+                <div class="feature-icon-svg">
+                    <!-- Quality/Shield SVG Icon -->
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 10 L85 25 L85 50 C85 75 50 90 50 90 C50 90 15 75 15 50 L15 25 Z" fill="#2e7d32" stroke="#1b5e20" stroke-width="2"/>
+                        <path d="M35 50 L45 60 L65 40" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </div>
                 <h3>Quality Guaranteed</h3>
                 <p>All our products meet the highest quality standards</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">[Delivery]</div>
+                <div class="feature-icon-svg">
+                    <!-- Delivery/Truck SVG Icon -->
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="10" y="35" width="55" height="30" rx="3" fill="#2e7d32"/>
+                        <rect x="15" y="40" width="45" height="20" rx="2" fill="#43a047"/>
+                        <rect x="60" y="30" width="30" height="35" rx="3" fill="#2e7d32"/>
+                        <rect x="65" y="35" width="20" height="25" rx="2" fill="#43a047"/>
+                        <circle cx="30" cy="70" r="10" fill="#555" stroke="#333" stroke-width="2"/>
+                        <circle cx="30" cy="70" r="5" fill="#888"/>
+                        <circle cx="70" cy="70" r="10" fill="#555" stroke="#333" stroke-width="2"/>
+                        <circle cx="70" cy="70" r="5" fill="#888"/>
+                        <line x1="10" y1="45" x2="5" y2="45" stroke="#2e7d32" stroke-width="3"/>
+                        <line x1="10" y1="50" x2="5" y2="50" stroke="#2e7d32" stroke-width="3"/>
+                    </svg>
+                </div>
                 <h3>Fast Delivery</h3>
                 <p>We deliver your orders promptly and safely</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">[Prices]</div>
+                <div class="feature-icon-svg">
+                    <!-- Price/Money SVG Icon -->
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="40" fill="#2e7d32" stroke="#1b5e20" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="30" fill="#43a047"/>
+                        <text x="50" y="58" text-anchor="middle" fill="white" font-size="30" font-weight="bold" font-family="Arial">GHS</text>
+                        <path d="M30 30 L70 70" stroke="#FFD54F" stroke-width="3" stroke-dasharray="5,5"/>
+                    </svg>
+                </div>
                 <h3>Best Prices</h3>
                 <p>Competitive prices on all our poultry products</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">[Support]</div>
+                <div class="feature-icon-svg">
+                    <!-- Support/Headset SVG Icon -->
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="40" r="25" fill="#2e7d32"/>
+                        <circle cx="50" cy="40" r="18" fill="#43a047"/>
+                        <circle cx="50" cy="40" r="8" fill="#66bb6a"/>
+                        <rect x="25" y="55" width="50" height="25" rx="5" fill="#2e7d32"/>
+                        <rect x="30" y="60" width="40" height="15" rx="3" fill="#43a047"/>
+                        <rect x="20" y="50" width="10" height="20" rx="3" fill="#1b5e20"/>
+                        <rect x="70" y="50" width="10" height="20" rx="3" fill="#1b5e20"/>
+                        <circle cx="25" cy="65" r="5" fill="#1b5e20"/>
+                        <circle cx="75" cy="65" r="5" fill="#1b5e20"/>
+                    </svg>
+                </div>
                 <h3>Customer Support</h3>
                 <p>We're always here to help you</p>
             </div>
@@ -236,9 +399,7 @@
     <!-- ========== FOOTER ========== -->
     <footer class="footer">
         <p>F and B Poultry Farm Limited - All Rights Reserved</p>
-        <p style="font-size: 1.1rem; font-weight: 600; color: #333333; margin-top: 10px;">
-            📍 Berekum-Abi | 📞 054411993 | 📧 info@fandbpoultry.com
-        </p>
+        <p>Location: Your City | Phone: 0800-123-4567 | Email: info@fandbpoultry.com</p>
     </footer>
 
     <!-- Load JavaScript -->
