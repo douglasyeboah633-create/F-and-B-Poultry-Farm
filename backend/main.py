@@ -957,6 +957,117 @@ def get_payment_stats():
 
 
 # ============================================================
+# MEDIA UPLOAD API ROUTES
+# ============================================================
+
+import uuid
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'frontend', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm'}
+
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/api/upload', methods=['POST'])
+@jwt_required()
+def upload_file():
+    """Upload an image or video file (Admin only)"""
+    if not admin_required():
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    if 'file' not in request.files:
+        return jsonify({'status': False, 'message': 'No file provided'}), 400
+    
+    file = request.files['file']
+    file_type = request.form.get('type', 'image')
+    
+    if file.filename == '':
+        return jsonify({'status': False, 'message': 'No file selected'}), 400
+    
+    if not allowed_file(file.filename):
+        return jsonify({'status': False, 'message': 'File type not allowed'}), 400
+    
+    # Determine subfolder
+    subfolder = 'images' if file_type == 'image' else 'videos'
+    folder = os.path.join(UPLOAD_FOLDER, subfolder)
+    os.makedirs(folder, exist_ok=True)
+    
+    # Generate unique filename
+    ext = file.filename.rsplit('.', 1)[1].lower()
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    filepath = os.path.join(folder, unique_name)
+    
+    # Save file
+    file.save(filepath)
+    
+    # Get file size
+    size_kb = os.path.getsize(filepath) / 1024
+    size_display = f"{size_kb:.1f} KB" if size_kb < 1024 else f"{size_kb/1024:.1f} MB"
+    
+    return jsonify({
+        'status': True,
+        'message': 'File uploaded successfully',
+        'data': {
+            'filename': unique_name,
+            'url': f'/uploads/{subfolder}/{unique_name}',
+            'type': file_type,
+            'size': size_display
+        }
+    }), 201
+
+
+@app.route('/api/media', methods=['GET'])
+@jwt_required()
+def get_media():
+    """Get all uploaded media files (Admin only)"""
+    if not admin_required():
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    media_list = []
+    
+    for subfolder in ['images', 'videos']:
+        folder = os.path.join(UPLOAD_FOLDER, subfolder)
+        if os.path.exists(folder):
+            for filename in os.listdir(folder):
+                filepath = os.path.join(folder, filename)
+                if os.path.isfile(filepath):
+                    size_kb = os.path.getsize(filepath) / 1024
+                    size_display = f"{size_kb:.1f} KB" if size_kb < 1024 else f"{size_kb/1024:.1f} MB"
+                    media_list.append({
+                        'filename': filename,
+                        'url': f'/uploads/{subfolder}/{filename}',
+                        'type': 'image' if subfolder == 'images' else 'video',
+                        'size': size_display
+                    })
+    
+    return jsonify({'status': True, 'data': media_list}), 200
+
+
+@app.route('/api/media/<filename>', methods=['DELETE'])
+@jwt_required()
+def delete_media(filename):
+    """Delete a media file (Admin only)"""
+    if not admin_required():
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    # Search in both folders
+    for subfolder in ['images', 'videos']:
+        filepath = os.path.join(UPLOAD_FOLDER, subfolder, filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            return jsonify({'status': True, 'message': 'File deleted successfully'}), 200
+    
+    return jsonify({'status': False, 'message': 'File not found'}), 404
+
+
+@app.route('/uploads/<path:filename>')
+def serve_upload(filename):
+    """Serve uploaded files"""
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+# ============================================================
 # SERVE FRONTEND STATIC FILES
 # ============================================================
 
