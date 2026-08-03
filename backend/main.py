@@ -949,11 +949,13 @@ def get_all_payments():
         result.append({
             'id': payment.id,
             'order_id': payment.order_id,
-            'reference': f'FAND-B-{payment.order_id}-{payment.id}',
+            'reference': payment.reference or f'FAND-B-{payment.order_id}-{payment.id}',
             'customer': customer.username if customer else 'Unknown',
             'email': customer.email if customer else '',
             'amount': payment.amount,
             'method': payment.payment_method,
+            'phone': payment.phone or '',
+            'provider': payment.provider or '',
             'date': payment.payment_date.strftime('%Y-%m-%d %H:%M') if payment.payment_date else '',
             'status': payment.payment_status
         })
