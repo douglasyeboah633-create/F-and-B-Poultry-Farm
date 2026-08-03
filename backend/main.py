@@ -72,7 +72,7 @@ def init_db():
                     admin_password = bcrypt.generate_password_hash('Hector1234').decode('utf-8')
                     admin = User(
                         username='Douglas Yeboah',
-                        email='douglasyeboah633@mail.com',
+                        email='douglasglayeboah633@gmail.com',
                         password_hash=admin_password,
                         role='admin',
                         phone='054411993',
@@ -1012,7 +1012,7 @@ if __name__ == '__main__':
             admin_password = bcrypt.generate_password_hash('Hector1234').decode('utf-8')
             admin = User(
                 username='Douglas Yeboah',
-                email='douglasyeboah633@mail.com',
+                email='douglasglayeboah633@gmail.com',
                 password_hash=admin_password,
                 role='admin',
                 phone='054411993',
@@ -1020,12 +1020,12 @@ if __name__ == '__main__':
             )
             db.session.add(admin)
             db.session.commit()
-            print("[OK] Default admin created: douglasyeboah633@mail.com / Hector1234")
+            print("[OK] Default admin created: douglasglayeboah633@gmail.com / Hector1234")
     
     print("\n" + "="*50)
     print("F and B Poultry Farm Limited")
     print("Server running at: http://localhost:5000")
-    print("Admin login: douglasyeboah633@mail.com / Hector1234")
+    print("Admin login: douglasglayeboah633@gmail.com / Hector1234")
     print("="*50 + "\n")
     
     # Get port from environment variable (Render sets this)
