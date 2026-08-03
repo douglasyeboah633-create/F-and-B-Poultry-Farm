@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Dashboard - F and B Poultry Farm Limited</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #1b4332;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .sidebar .logo {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        .sidebar .logo h2 { font-size: 18px; }
+        .sidebar .logo p { font-size: 12px; color: #95d5b2; }
+        .sidebar nav a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .sidebar nav a:hover, .sidebar nav a.active { background: #2d6a4f; }
+        .sidebar nav a .icon { margin-right: 10px; }
+
+        /* Main Content */
+        .main-content { margin-left: 250px; padding: 20px; }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header h1 { color: #1b4332; font-size: 24px; }
+        .header .user-info { color: #666; }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card .stat-icon { font-size: 30px; margin-bottom: 10px; }
+        .stat-card .stat-value { font-size: 28px; font-weight: bold; color: #1b4332; }
+        .stat-card .stat-label { color: #666; margin-top: 5px; }
+        .stat-card.green { border-top: 4px solid #2d6a4f; }
+        .stat-card.blue { border-top: 4px solid #2196f3; }
+        .stat-card.orange { border-top: 4px solid #ff9800; }
+        .stat-card.red { border-top: 4px solid #f44336; }
+
+        /* Payment Table */
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .table-header h2 { color: #1b4332; }
+        .table-header .filters select, .table-header .filters input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        tr:hover { background: #f8f9fa; }
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-failed { background: #f8d7da; color: #721c24; }
+        .status-refunded { background: #e2e3e5; color: #383d41; }
+
+        /* Action buttons */
+        .action-btn { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; margin: 0 3px; }
+        .btn-view { background: #2196f3; color: white; }
+        .btn-refund { background: #ff9800; color: white; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #666; }
+        .modal h2 { color: #1b4332; margin-bottom: 20px; }
+        .modal .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .modal .detail-row .label { color: #666; }
+        .modal .detail-row .value { font-weight: 500; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 60px; }
+            .sidebar .logo h2, .sidebar .logo p, .sidebar nav a span { display: none; }
+            .main-content { margin-left: 60px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .table-header { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <h2>🐔 F and B Poultry</h2>
+            <p>Payment Dashboard</p>
+        </div>
+        <nav>
+            <a href="admin-dashboard.html"><span class="icon">📊</span><span>Dashboard</span></a>
+            <a href="admin-products.html"><span class="icon">📦</span><span>Products</span></a>
+            <a href="admin-orders.html"><span class="icon">📋</span><span>Orders</span></a>
+            <a href="admin-payments.html" class="active"><span class="icon">💳</span><span>Payments</span></a>
+            <a href="admin-customers.html"><span class="icon">👥</span><span>Customers</span></a>
+            <a href="admin-ads.html"><span class="icon">📢</span><span>Advertisements</span></a>
+            <a href="../index.html"><span class="icon">🏠</span><span>View Website</span></a>
+            <a href="#" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1>💳 Payment Management</h1>
+            <div class="user-info">
+                <span id="adminName">Admin</span> | <span id="currentDate"></span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card green">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalRevenue">GHS 0.00</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="successfulPayments">0</div>
+                <div class="stat-label">Successful</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-value" id="pendingPayments">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-icon">❌</div>
+                <div class="stat-value" id="failedPayments">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h2>Payment Transactions</h2>
+                <div class="filters">
+                    <select id="statusFilter" onchange="filterPayments()">
+                        <option value="all">All Status</option>
+                        <option value="success">Successful</option>
+                        <option value="pending">Pending</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                    <input type="text" id="searchInput" placeholder="Search reference..." onkeyup="filterPayments()">
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentsTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px; color: #666;">
+                            Loading payments...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Payment Details Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2>Payment Details</h2>
+            <div id="modalDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get token from localStorage
+        const token = localStorage.getItem('token');
+        const userRole = localStorage.getItem('role');
+
+        // Check if admin
+        if (!token || userRole !== 'admin') {
+            window.location.href = 'login.html';
+        }
+
+        // Display admin name
+        document.getElementById('adminName').textContent = localStorage.getItem('username') || 'Admin';
+
+        // Display current date
+        const now = new Date();
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-GB', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // Sample payment data
+        let payments = [
+            { id: 1, reference: 'FAND-B-1-20260803120000', customer: 'John Doe', email: 'john@example.com', amount: 150.00, method: 'Card', date: '2026-08-03 14:30', status: 'success' },
+            { id: 2, reference: 'FAND-B-2-20260803110000', customer: 'Jane Smith', email: 'jane@example.com', amount: 85.50, method: 'MTN Mobile Money', date: '2026-08-03 13:45', status: 'pending' },
+            { id: 3, reference: 'FAND-B-3-20260803100000', customer: 'Kwame Mensah', email: 'kwame@example.com', amount: 200.00, method: 'Vodafone Cash', date: '2026-08-03 12:15', status: 'success' },
+            { id: 4, reference: 'FAND-B-4-20260803090000', customer: 'Ama Serwaa', email: 'ama@example.com', amount: 45.00, method: 'Card', date: '2026-08-03 11:00', status: 'failed' },
+            { id: 5, reference: 'FAND-B-5-20260803080000', customer: 'Kofi Boateng', email: 'kofi@example.com', amount: 320.00, method: 'AirtelTigo Money', date: '2026-08-03 10:30', status: 'success' }
+        ];
+
+        // Load payments
+        function loadPayments() {
+            updateStats();
+            renderPaymentsTable();
+        }
+
+        // Update stats
+        function updateStats() {
+            const totalRevenue = payments.filter(p => p.status === 'success').reduce((sum, p) => sum + p.amount, 0);
+            const successful = payments.filter(p => p.status === 'success').length;
+            const pending = payments.filter(p => p.status === 'pending').length;
+            const failed = payments.filter(p => p.status === 'failed').length;
+
+            document.getElementById('totalRevenue').textContent = `GHS ${totalRevenue.toFixed(2)}`;
+            document.getElementById('successfulPayments').textContent = successful;
+            document.getElementById('pendingPayments').textContent = pending;
+            document.getElementById('failedPayments').textContent = failed;
+        }
+
+        // Render payments table
+        function renderPaymentsTable() {
+            const tbody = document.getElementById('paymentsTableBody');
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            const filtered = payments.filter(p => {
+                const matchStatus = statusFilter === 'all' || p.status === statusFilter;
+                const matchSearch = p.reference.toLowerCase().includes(searchTerm) || 
+                                   p.customer.toLowerCase().includes(searchTerm);
+                return matchStatus && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: #666;">No payments found</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => `
+                <tr>
+                    <td>${p.reference}</td>
+                    <td>${p.customer}</td>
+                    <td style="font-weight: bold;">GHS ${p.amount.toFixed(2)}</td>
+                    <td>${p.method}</td>
+                    <td>${p.date}</td>
+                    <td><span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span></td>
+                    <td>
+                        <button class="action-btn btn-view" onclick="viewPayment(${p.id})">View</button>
+                        ${p.status === 'success' ? `<button class="action-btn btn-refund" onclick="refundPayment(${p.id})">Refund</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter payments
+        function filterPayments() {
+            renderPaymentsTable();
+        }
+
+        // View payment details
+        function viewPayment(id) {
+            const payment = payments.find(p => p.id === id);
+            if (!payment) return;
+
+            document.getElementById('modalDetails').innerHTML = `
+                <div class="detail-row">
+                    <span class="label">Reference</span>
+                    <span class="value">${payment.reference}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Customer</span>
+                    <span class="value">${payment.customer}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Email</span>
+                    <span class="value">${payment.email}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Amount</span>
+                    <span class="value">GHS ${payment.amount.toFixed(2)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Method</span>
+                    <span class="value">${payment.method}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Date</span>
+                    <span class="value">${payment.date}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Status</span>
+                    <span class="value"><span class="status-badge status-${payment.status}">${payment.status.toUpperCase()}</span></span>
+                </div>
+            `;
+
+            document.getElementById('paymentModal').style.display = 'block';
+        }
+
+        // Refund payment
+        function refundPayment(id) {
+            if (!confirm('Are you sure you want to refund this payment?')) return;
+
+            const payment = payments.find(p => p.id === id);
+            if (payment) {
+                payment.status = 'refunded';
+                renderPaymentsTable();
+                updateStats();
+                alert(`Payment ${payment.reference} has been refunded.`);
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // Close modal on click outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('paymentModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('role');
+            localStorage.removeItem('username');
+            localStorage.removeItem('email');
+            window.location.href = 'login.html';
+        }
+
+        // Initialize
+        loadPayments();
+    </script>
+</body>
+</html>

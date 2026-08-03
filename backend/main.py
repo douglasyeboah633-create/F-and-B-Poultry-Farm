@@ -905,6 +905,57 @@ def get_payment_history():
     return jsonify([p.to_dict() for p in payments]), 200
 
 
+@app.route('/api/payments/all', methods=['GET'])
+@jwt_required()
+def get_all_payments():
+    """Get all payments (Admin only) for payment dashboard"""
+    if not admin_required():
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    # Get all payments with customer and order info
+    payments = Payment.query.order_by(Payment.payment_date.desc()).all()
+    result = []
+    
+    for payment in payments:
+        order = Order.query.get(payment.order_id)
+        customer = User.query.get(order.customer_id) if order else None
+        
+        result.append({
+            'id': payment.id,
+            'order_id': payment.order_id,
+            'reference': f'FAND-B-{payment.order_id}-{payment.id}',
+            'customer': customer.username if customer else 'Unknown',
+            'email': customer.email if customer else '',
+            'amount': payment.amount,
+            'method': payment.payment_method,
+            'date': payment.payment_date.strftime('%Y-%m-%d %H:%M') if payment.payment_date else '',
+            'status': payment.payment_status
+        })
+    
+    return jsonify(result), 200
+
+
+@app.route('/api/payments/stats', methods=['GET'])
+@jwt_required()
+def get_payment_stats():
+    """Get payment statistics (Admin only)"""
+    if not admin_required():
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    total_revenue = db.session.query(db.func.sum(Payment.amount))\
+                              .filter(Payment.payment_status == 'completed').scalar() or 0
+    successful = Payment.query.filter_by(payment_status='completed').count()
+    pending = Payment.query.filter_by(payment_status='pending').count()
+    failed = Payment.query.filter_by(payment_status='failed').count()
+    
+    return jsonify({
+        'total_revenue': total_revenue,
+        'successful': successful,
+        'pending': pending,
+        'failed': failed
+    }), 200
+
+
 # ============================================================
 # SERVE FRONTEND STATIC FILES
 # ============================================================
