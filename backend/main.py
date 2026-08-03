@@ -639,72 +639,6 @@ def verify_account():
 
 
 # ============================================================
-# PAYSTACK PAYMENT INTEGRATION
-# ============================================================
-
-@app.route('/api/paystack/initialize', methods=['POST'])
-@jwt_required()
-def initialize_paystack_payment():
-    """Initialize payment with Paystack"""
-    data = request.get_json()
-    customer_id = get_jwt_identity()
-    
-    order = Order.query.get(data['order_id'])
-    if not order:
-        return jsonify({'error': 'Order not found'}), 404
-    
-    if order.customer_id != customer_id:
-        return jsonify({'error': 'Access denied'}), 403
-    
-    # TODO: Integrate with real Paystack API
-    # For now, return simulated payment URL
-    
-    return jsonify({
-        'status': True,
-        'message': 'Payment initialized',
-        'data': {
-            'authorization_url': f'http://localhost:3000/pay?order_id={order.id}&amount={order.total_amount}',
-            'reference': f'PAY-{order.id}-{random.randint(1000, 9999)}',
-            'amount': order.total_amount
-        }
-    }), 200
-
-
-@app.route('/api/paystack/verify', methods=['GET'])
-@jwt_required()
-def verify_paystack_payment():
-    """Verify Paystack payment"""
-    customer_id = get_jwt_identity()
-    reference = request.args.get('reference')
-    
-    # TODO: Verify with real Paystack API
-    # For now, simulate successful payment
-    
-    order_id = int(reference.split('-')[1])
-    order = Order.query.get(order_id)
-    
-    if not order or order.customer_id != customer_id:
-        return jsonify({'error': 'Order not found'}), 404
-    
-    # Create payment record
-    payment = Payment(
-        order_id=order.id,
-        amount=order.total_amount,
-        payment_method='paystack',
-        payment_status='completed'
-    )
-    db.session.add(payment)
-    order.status = 'confirmed'
-    db.session.commit()
-    
-    return jsonify({
-        'status': True,
-        'message': 'Payment verified successfully!',
-        'data': payment.to_dict()
-    }), 200
-
-
-# ============================================================
 # SIMPLE PAYMENT SYSTEM (No Paystack needed for testing)
 # ============================================================
 
@@ -853,6 +787,122 @@ def get_current_user():
         return jsonify({'error': 'User not found'}), 404
     
     return jsonify(user.to_dict()), 200
+
+
+# ============================================================
+# PAYSTACK PAYMENT API ROUTES
+# ============================================================
+
+@app.route('/api/paystack/initialize', methods=['POST'])
+@jwt_required()
+def paystack_initialize():
+    """Initialize a Paystack payment"""
+    from paystack import initialize_payment, create_payment_reference
+    
+    data = request.get_json()
+    customer_id = get_jwt_identity()
+    user = User.query.get(customer_id)
+    
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    order = Order.query.get(data.get('order_id'))
+    if not order:
+        return jsonify({'error': 'Order not found'}), 404
+    
+    if order.customer_id != customer_id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    # Create unique reference
+    reference = create_payment_reference(order.id, order.total_amount, user.email)
+    
+    # Initialize payment
+    result = initialize_payment(
+        email=user.email,
+        amount=order.total_amount,
+        reference=reference,
+        metadata={
+            'order_id': order.id,
+            'customer_id': customer_id,
+            'customer_name': user.username
+        }
+    )
+    
+    if result['status']:
+        return jsonify({
+            'status': True,
+            'message': 'Payment initialized',
+            'data': {
+                'authorization_url': result['data']['authorization_url'],
+                'reference': reference,
+                'amount': order.total_amount
+            }
+        }), 200
+    else:
+        return jsonify({
+            'status': False,
+            'message': result['message']
+        }), 400
+
+
+@app.route('/api/paystack/verify', methods=['GET'])
+@jwt_required()
+def paystack_verify():
+    """Verify a Paystack payment"""
+    from paystack import verify_payment
+    
+    reference = request.args.get('reference')
+    if not reference:
+        return jsonify({'error': 'Reference is required'}), 400
+    
+    result = verify_payment(reference)
+    
+    if result['status']:
+        # Update order status if payment successful
+        if result['data']['status'] == 'success':
+            # Find order by reference in metadata
+            order = Order.query.filter_by(id=result['data']['metadata'].get('order_id')).first()
+            if order:
+                order.status = 'confirmed'
+                db.session.commit()
+        
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+
+@app.route('/api/paystack/webhook', methods=['POST'])
+def paystack_webhook():
+    """Handle Paystack webhook events"""
+    from paystack import handle_webhook
+    
+    payload = request.get_json()
+    signature = request.headers.get('x-paystack-signature', '')
+    
+    result = handle_webhook(payload, signature)
+    
+    if result['status'] and result['event'] == 'charge.success':
+        # Update order status
+        reference = result.get('reference')
+        if reference:
+            # Find payment by reference and update
+            pass  # In production, update your database here
+    
+    return jsonify({'status': True}), 200
+
+
+@app.route('/api/payments/history', methods=['GET'])
+@jwt_required()
+def get_payment_history():
+    """Get payment history for current user"""
+    customer_id = get_jwt_identity()
+    
+    # Get payments from database
+    payments = Payment.query.filter_by(
+        order_id=Order.query.filter_by(customer_id=customer_id).with_entities(Order.id)
+    ).all()
+    
+    return jsonify([p.to_dict() for p in payments]), 200
 
 
 # ============================================================
