@@ -278,19 +278,25 @@
             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
         });
 
-        // Sample payment data
-        let payments = [
-            { id: 1, reference: 'FAND-B-1-20260803120000', customer: 'John Doe', email: 'john@example.com', amount: 150.00, method: 'Card', date: '2026-08-03 14:30', status: 'success' },
-            { id: 2, reference: 'FAND-B-2-20260803110000', customer: 'Jane Smith', email: 'jane@example.com', amount: 85.50, method: 'MTN Mobile Money', date: '2026-08-03 13:45', status: 'pending' },
-            { id: 3, reference: 'FAND-B-3-20260803100000', customer: 'Kwame Mensah', email: 'kwame@example.com', amount: 200.00, method: 'Vodafone Cash', date: '2026-08-03 12:15', status: 'success' },
-            { id: 4, reference: 'FAND-B-4-20260803090000', customer: 'Ama Serwaa', email: 'ama@example.com', amount: 45.00, method: 'Card', date: '2026-08-03 11:00', status: 'failed' },
-            { id: 5, reference: 'FAND-B-5-20260803080000', customer: 'Kofi Boateng', email: 'kofi@example.com', amount: 320.00, method: 'AirtelTigo Money', date: '2026-08-03 10:30', status: 'success' }
-        ];
+        // Real payments from database
+        let payments = [];
 
-        // Load payments
-        function loadPayments() {
-            updateStats();
-            renderPaymentsTable();
+        // Load payments from backend
+        async function loadPayments() {
+            try {
+                const response = await fetch('/api/payments/all', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                payments = data;
+                updateStats();
+                renderPaymentsTable();
+            } catch (error) {
+                document.getElementById('paymentsTableBody').innerHTML = 
+                    '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #666;">Error loading payments</td></tr>';
+            }
         }
 
         // Update stats

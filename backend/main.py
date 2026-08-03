@@ -462,7 +462,7 @@ def update_order_status(order_id):
 @app.route('/api/payments', methods=['POST'])
 @jwt_required()
 def make_payment():
-    """Process payment for an order (simulated)"""
+    """Record a payment for an order (Mobile Money - REAL payment)"""
     customer_id = get_jwt_identity()
     data = request.get_json()
     
@@ -471,27 +471,53 @@ def make_payment():
         return jsonify({'error': 'Order not found'}), 404
     
     # Check if order belongs to this customer
-    if order.customer_id != customer_id:
+    if str(order.customer_id) != str(customer_id):
         return jsonify({'error': 'Access denied'}), 403
     
     # Check if already paid
     existing_payment = Payment.query.filter_by(order_id=order.id).first()
     if existing_payment:
-        return jsonify({'error': 'Order already paid'}), 400
+        return jsonify({'error': 'Order already has a payment recorded'}), 400
     
-    # Simulate payment processing (always succeeds)
+    # Record the payment (customer sends money to 0530043569 first)
     payment = Payment(
         order_id=order.id,
         amount=order.total_amount,
-        payment_method=data.get('payment_method', 'simulated'),
-        payment_status='completed'
+        payment_method=data.get('payment_method', 'mobile_money'),
+        payment_status='pending',
+        reference=data.get('reference', ''),
+        phone=data.get('phone', ''),
+        provider=data.get('provider', '')
     )
     
     db.session.add(payment)
-    order.status = 'confirmed'  # Auto-confirm on payment
+    order.status = 'pending'  # Wait for admin to confirm
     db.session.commit()
     
-    return jsonify({'message': 'Payment successful!', 'payment': payment.to_dict()}), 201
+    return jsonify({
+        'message': 'Payment recorded! Please wait for admin to confirm.',
+        'payment': payment.to_dict()
+    }), 201
+
+
+@app.route('/api/payments/<int:payment_id>/confirm', methods=['PUT'])
+@jwt_required()
+def confirm_payment(payment_id):
+    """Confirm a payment (Admin only)"""
+    if not admin_required():
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    payment = Payment.query.get(payment_id)
+    if not payment:
+        return jsonify({'error': 'Payment not found'}), 404
+    
+    payment.payment_status = 'completed'
+    order = Order.query.get(payment.order_id)
+    if order:
+        order.status = 'confirmed'
+    db.session.commit()
+    
+    return jsonify({'message': 'Payment confirmed!', 'payment': payment.to_dict()}), 200
 
 
 # ============================================================

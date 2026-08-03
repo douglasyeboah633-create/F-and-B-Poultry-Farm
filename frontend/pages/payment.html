@@ -14,121 +14,34 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .payment-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .payment-header h1 {
-            color: #2d6a4f;
-            margin-bottom: 10px;
-        }
-        .order-summary {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .order-summary h3 {
-            color: #2d6a4f;
-            margin-bottom: 15px;
-        }
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .summary-row:last-child {
-            border-bottom: none;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .payment-methods {
-            margin: 20px 0;
-        }
-        .payment-method {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .payment-method:hover {
-            border-color: #2d6a4f;
-            background: #f0f7f4;
-        }
-        .payment-method.selected {
-            border-color: #2d6a4f;
-            background: #f0f7f4;
-        }
-        .payment-method input {
-            margin-right: 15px;
-        }
-        .payment-method .method-icon {
-            font-size: 24px;
-            margin-right: 15px;
-        }
-        .payment-method .method-name {
-            font-weight: 500;
-        }
-        .pay-button {
-            width: 100%;
-            padding: 15px;
-            background: #2d6a4f;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .pay-button:hover {
-            background: #1b4332;
-        }
-        .pay-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .loading {
-            text-align: center;
-            padding: 20px;
-            display: none;
-        }
-        .loading .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #2d6a4f;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .error-message {
-            background: #fee;
-            color: #c00;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            display: none;
-        }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #2d6a4f;
-            text-decoration: none;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
+        .payment-header { text-align: center; margin-bottom: 30px; }
+        .payment-header h1 { color: #2d6a4f; margin-bottom: 10px; }
+        .order-summary { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .order-summary h3 { color: #2d6a4f; margin-bottom: 15px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0; }
+        .summary-row:last-child { border-bottom: none; font-weight: bold; font-size: 1.1em; }
+
+        .pay-instructions { background: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2d6a4f; }
+        .pay-instructions h3 { color: #2d6a4f; margin-bottom: 10px; }
+        .pay-instructions ol { padding-left: 20px; color: #333; line-height: 1.8; }
+        .pay-instructions .phone-number { font-size: 24px; font-weight: bold; color: #2d6a4f; text-align: center; margin: 10px 0; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #333; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+
+        .pay-button { width: 100%; padding: 15px; background: #2d6a4f; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .pay-button:hover { background: #1b4332; }
+        .pay-button:disabled { background: #ccc; cursor: not-allowed; }
+
+        .loading { text-align: center; padding: 20px; display: none; }
+        .loading .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2d6a4f; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .error-message { background: #fee; color: #c00; padding: 10px; border-radius: 5px; margin: 10px 0; display: none; }
+        .success-message { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; display: none; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #2d6a4f; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -139,62 +52,61 @@
         </div>
 
         <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
 
         <!-- Order Summary -->
-        <div class="order-summary" id="orderSummary">
+        <div class="order-summary">
             <h3>Order Summary</h3>
             <div id="orderDetails"></div>
         </div>
 
-        <!-- Payment Methods -->
-        <div class="payment-methods">
-            <h3>Select Payment Method</h3>
-            
-            <label class="payment-method">
-                <input type="radio" name="paymentMethod" value="card" checked>
-                <span class="method-icon">💳</span>
-                <span class="method-name">Credit / Debit Card</span>
-            </label>
-            
-            <label class="payment-method">
-                <input type="radio" name="paymentMethod" value="mobile_money">
-                <span class="method-icon">📱</span>
-                <span class="method-name">Mobile Money (MTN, Vodafone, AirtelTigo)</span>
-            </label>
+        <!-- Payment Instructions -->
+        <div class="pay-instructions">
+            <h3>📱 How to Pay with Mobile Money</h3>
+            <ol>
+                <li>Dial <strong>*170#</strong> (MTN) or your mobile money code</li>
+                <li>Select <strong>"Send Money"</strong></li>
+                <li>Enter this number: <strong>0530043569</strong></li>
+                <li>Enter the amount: <strong id="amountDisplay">GHS 0.00</strong></li>
+                <li>Enter your mobile money PIN to confirm</li>
+                <li>You'll receive a <strong>transaction reference</strong> via SMS</li>
+                <li>Enter that reference below</li>
+            </ol>
+            <div class="phone-number">📞 0530043569</div>
         </div>
 
-        <!-- Mobile Money Details (hidden by default) -->
-        <div id="mobileMoneyDetails" style="display: none;">
-            <h3>Mobile Money Details</h3>
-            <div class="form-group">
-                <label>Phone Number</label>
-                <input type="tel" id="phoneNumber" placeholder="e.g. 0551234567" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Provider</label>
-                <select id="provider" class="form-control">
-                    <option value="mtn">MTN Mobile Money</option>
-                    <option value="vodafone">Vodafone Cash</option>
-                    <option value="airteltigo">AirtelTigo Money</option>
-                </select>
-            </div>
+        <!-- Payment Details Form -->
+        <div class="form-group">
+            <label>Mobile Money Transaction Reference *</label>
+            <input type="text" id="reference" placeholder="e.g. 1234567890" required>
+        </div>
+        <div class="form-group">
+            <label>Your Phone Number *</label>
+            <input type="tel" id="phone" placeholder="e.g. 0551234567" required>
+        </div>
+        <div class="form-group">
+            <label>Mobile Money Provider</label>
+            <select id="provider">
+                <option value="MTN Mobile Money">MTN Mobile Money</option>
+                <option value="Vodafone Cash">Vodafone Cash</option>
+                <option value="AirtelTigo Money">AirtelTigo Money</option>
+            </select>
         </div>
 
         <!-- Loading -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Processing payment...</p>
+            <p>Recording payment...</p>
         </div>
 
         <!-- Pay Button -->
-        <button class="pay-button" id="payButton" onclick="processPayment()">
-            Pay Now
+        <button class="pay-button" id="payButton" onclick="recordPayment()">
+            I Have Paid - Record Payment
         </button>
 
         <a href="customer-dashboard.html" class="back-link">← Back to Dashboard</a>
     </div>
 
-    <script src="https://js.paystack.co/v1/inline.js"></script>
     <script>
         // Get order ID from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -203,7 +115,6 @@
 
         // Get token from localStorage
         const token = localStorage.getItem('token');
-        const userEmail = localStorage.getItem('email') || 'customer@example.com';
 
         // Display order summary
         document.addEventListener('DOMContentLoaded', function() {
@@ -222,6 +133,7 @@
                         <span>GHS ${parseFloat(amount).toFixed(2)}</span>
                     </div>
                 `;
+                document.getElementById('amountDisplay').textContent = `GHS ${parseFloat(amount).toFixed(2)}`;
             } else {
                 document.getElementById('orderDetails').innerHTML = `
                     <div class="summary-row">
@@ -229,137 +141,70 @@
                     </div>
                 `;
             }
-
-            // Show/hide mobile money details
-            document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    document.getElementById('mobileMoneyDetails').style.display = 
-                        this.value === 'mobile_money' ? 'block' : 'none';
-                });
-            });
         });
 
-        // Process payment
-        async function processPayment() {
-            const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+        // Record payment
+        async function recordPayment() {
+            const reference = document.getElementById('reference').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const provider = document.getElementById('provider').value;
+
             const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
             const loading = document.getElementById('loading');
             const payButton = document.getElementById('payButton');
 
             errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            // Validate inputs
+            if (!reference) {
+                errorDiv.textContent = 'Please enter your mobile money transaction reference';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            if (!phone) {
+                errorDiv.textContent = 'Please enter your phone number';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
             loading.style.display = 'block';
             payButton.disabled = true;
 
             try {
-                if (method === 'card') {
-                    // Initialize Paystack payment
-                    const response = await fetch('/api/paystack/initialize', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            order_id: parseInt(orderId)
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.status) {
-                        // Open Paystack popup (stays on same page)
-                        const handler = PaystackPop.setup({
-                            key: 'pk_test_placeholder_key', // Replace with your public key
-                            email: userEmail,
-                            amount: parseFloat(amount) * 100, // Convert to pesewas
-                            currency: 'GHS',
-                            ref: data.data.reference,
-                            callback: function(response) {
-                                // Payment successful - verify
-                                verifyPayment(response.reference);
-                            },
-                            onClose: function() {
-                                // User closed the popup
-                                errorDiv.textContent = 'Payment cancelled. Please try again.';
-                                errorDiv.style.display = 'block';
-                                loading.style.display = 'none';
-                                payButton.disabled = false;
-                            }
-                        });
-                        handler.openIframe();
-                    } else {
-                        errorDiv.textContent = data.message || 'Payment initialization failed';
-                        errorDiv.style.display = 'block';
-                    }
-                } else {
-                    // Mobile Money payment
-                    const phone = document.getElementById('phoneNumber').value;
-                    const provider = document.getElementById('provider').value;
-
-                    if (!phone) {
-                        errorDiv.textContent = 'Please enter your phone number';
-                        errorDiv.style.display = 'block';
-                        loading.style.display = 'none';
-                        payButton.disabled = false;
-                        return;
-                    }
-
-                    const response = await fetch('/api/create-payment', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            order_id: parseInt(orderId),
-                            amount: parseFloat(amount),
-                            phone: phone,
-                            provider: provider,
-                            name: localStorage.getItem('username') || '',
-                            email: localStorage.getItem('email') || ''
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.status) {
-                        // Redirect to simulation page
-                        window.location.href = data.data.authorization_url;
-                    } else {
-                        errorDiv.textContent = data.message || 'Payment failed';
-                        errorDiv.style.display = 'block';
-                    }
-                }
-            } catch (error) {
-                errorDiv.textContent = 'Error processing payment: ' + error.message;
-                errorDiv.style.display = 'block';
-            } finally {
-                loading.style.display = 'none';
-                payButton.disabled = false;
-            }
-        }
-
-        // Verify payment after successful Paystack popup
-        async function verifyPayment(reference) {
-            try {
-                const response = await fetch(`/api/paystack/verify?reference=${reference}`, {
-                    method: 'GET',
+                const response = await fetch('/api/payments', {
+                    method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
-                    }
+                    },
+                    body: JSON.stringify({
+                        order_id: parseInt(orderId),
+                        payment_method: 'mobile_money',
+                        reference: reference,
+                        phone: phone,
+                        provider: provider
+                    })
                 });
 
                 const data = await response.json();
 
-                if (data.status) {
-                    // Payment verified - show success
-                    window.location.href = `/pages/success.html?reference=${reference}&amount=${amount}`;
+                if (response.ok) {
+                    successDiv.textContent = 'Payment recorded successfully! Our team will confirm your payment shortly.';
+                    successDiv.style.display = 'block';
+                    payButton.textContent = '✓ Payment Recorded';
+                    payButton.disabled = true;
                 } else {
-                    document.getElementById('errorMessage').textContent = 'Payment verification failed';
-                    document.getElementById('errorMessage').style.display = 'block';
+                    errorDiv.textContent = data.error || 'Failed to record payment';
+                    errorDiv.style.display = 'block';
                 }
             } catch (error) {
-                document.getElementById('errorMessage').textContent = 'Error verifying payment';
-                document.getElementById('errorMessage').style.display = 'block';
+                errorDiv.textContent = 'Error recording payment: ' + error.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                payButton.disabled = false;
             }
         }
     </script>

@@ -123,8 +123,11 @@ class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
-    payment_method = db.Column(db.String(50), default='simulated')  # cash, card, simulated
+    payment_method = db.Column(db.String(50), default='mobile_money')  # mobile_money, card, cash
     payment_status = db.Column(db.String(20), default='pending')    # pending, completed, failed
+    reference = db.Column(db.String(100), nullable=True)            # Mobile money transaction reference
+    phone = db.Column(db.String(20), nullable=True)                 # Customer's phone number
+    provider = db.Column(db.String(50), nullable=True)              # MTN, Vodafone, AirtelTigo
     payment_date = db.Column(db.DateTime, default=datetime.utcnow)
     
     order = db.relationship('Order', backref='payment')
@@ -136,6 +139,9 @@ class Payment(db.Model):
             'amount': self.amount,
             'payment_method': self.payment_method,
             'payment_status': self.payment_status,
+            'reference': self.reference,
+            'phone': self.phone,
+            'provider': self.provider,
             'payment_date': self.payment_date.isoformat() if self.payment_date else None
         }
 
