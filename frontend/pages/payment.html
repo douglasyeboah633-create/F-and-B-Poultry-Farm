@@ -194,6 +194,7 @@
         <a href="customer-dashboard.html" class="back-link">← Back to Dashboard</a>
     </div>
 
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <script>
         // Get order ID from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -202,6 +203,7 @@
 
         // Get token from localStorage
         const token = localStorage.getItem('token');
+        const userEmail = localStorage.getItem('email') || 'customer@example.com';
 
         // Display order summary
         document.addEventListener('DOMContentLoaded', function() {
@@ -265,8 +267,26 @@
                     const data = await response.json();
 
                     if (data.status) {
-                        // Redirect to Paystack payment page
-                        window.location.href = data.data.authorization_url;
+                        // Open Paystack popup (stays on same page)
+                        const handler = PaystackPop.setup({
+                            key: 'pk_test_placeholder_key', // Replace with your public key
+                            email: userEmail,
+                            amount: parseFloat(amount) * 100, // Convert to pesewas
+                            currency: 'GHS',
+                            ref: data.data.reference,
+                            callback: function(response) {
+                                // Payment successful - verify
+                                verifyPayment(response.reference);
+                            },
+                            onClose: function() {
+                                // User closed the popup
+                                errorDiv.textContent = 'Payment cancelled. Please try again.';
+                                errorDiv.style.display = 'block';
+                                loading.style.display = 'none';
+                                payButton.disabled = false;
+                            }
+                        });
+                        handler.openIframe();
                     } else {
                         errorDiv.textContent = data.message || 'Payment initialization failed';
                         errorDiv.style.display = 'block';
@@ -315,6 +335,31 @@
             } finally {
                 loading.style.display = 'none';
                 payButton.disabled = false;
+            }
+        }
+
+        // Verify payment after successful Paystack popup
+        async function verifyPayment(reference) {
+            try {
+                const response = await fetch(`/api/paystack/verify?reference=${reference}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.status) {
+                    // Payment verified - show success
+                    window.location.href = `/pages/success.html?reference=${reference}&amount=${amount}`;
+                } else {
+                    document.getElementById('errorMessage').textContent = 'Payment verification failed';
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'Error verifying payment';
+                document.getElementById('errorMessage').style.display = 'block';
             }
         }
     </script>
