@@ -281,6 +281,13 @@
         // Real payments from database
         let payments = [];
 
+        // Helper: map backend status to display
+        function mapStatus(status) {
+            if (status === 'completed' || status === 'success') return 'success';
+            if (status === 'failed') return 'failed';
+            return 'pending';
+        }
+
         // Load payments from backend
         async function loadPayments() {
             try {
@@ -301,10 +308,12 @@
 
         // Update stats
         function updateStats() {
-            const totalRevenue = payments.filter(p => p.status === 'success').reduce((sum, p) => sum + p.amount, 0);
-            const successful = payments.filter(p => p.status === 'success').length;
-            const pending = payments.filter(p => p.status === 'pending').length;
-            const failed = payments.filter(p => p.status === 'failed').length;
+            const successful = payments.filter(p => mapStatus(p.status) === 'success').length;
+            const pending = payments.filter(p => mapStatus(p.status) === 'pending').length;
+            const failed = payments.filter(p => mapStatus(p.status) === 'failed').length;
+            const totalRevenue = payments
+                .filter(p => mapStatus(p.status) === 'success')
+                .reduce((sum, p) => sum + p.amount, 0);
 
             document.getElementById('totalRevenue').textContent = `GHS ${totalRevenue.toFixed(2)}`;
             document.getElementById('successfulPayments').textContent = successful;
@@ -319,9 +328,10 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
             const filtered = payments.filter(p => {
-                const matchStatus = statusFilter === 'all' || p.status === statusFilter;
-                const matchSearch = p.reference.toLowerCase().includes(searchTerm) || 
-                                   p.customer.toLowerCase().includes(searchTerm);
+                const status = mapStatus(p.status);
+                const matchStatus = statusFilter === 'all' || status === statusFilter;
+                const matchSearch = (p.reference || '').toLowerCase().includes(searchTerm) || 
+                                   (p.customer || '').toLowerCase().includes(searchTerm);
                 return matchStatus && matchSearch;
             });
 
@@ -330,20 +340,24 @@
                 return;
             }
 
-            tbody.innerHTML = filtered.map(p => `
+            tbody.innerHTML = filtered.map(p => {
+                const status = mapStatus(p.status);
+                return `
                 <tr>
-                    <td>${p.reference}</td>
-                    <td>${p.customer}</td>
+                    <td>${p.reference || 'N/A'}</td>
+                    <td>${p.customer || 'Unknown'}</td>
                     <td style="font-weight: bold;">GHS ${p.amount.toFixed(2)}</td>
-                    <td>${p.method}</td>
-                    <td>${p.date}</td>
-                    <td><span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span></td>
+                    <td>${p.method || 'Mobile Money'}</td>
+                    <td>${p.date || '-'}</td>
+                    <td><span class="status-badge status-${status}">${status.toUpperCase()}</span></td>
                     <td>
                         <button class="action-btn btn-view" onclick="viewPayment(${p.id})">View</button>
-                        ${p.status === 'success' ? `<button class="action-btn btn-refund" onclick="refundPayment(${p.id})">Refund</button>` : ''}
+                        ${status === 'pending' ? `<button class="action-btn btn-refund" onclick="confirmPayment(${p.id})">Confirm</button>` : ''}
+                        ${status === 'success' ? `<button class="action-btn btn-refund" onclick="refundPayment(${p.id})">Refund</button>` : ''}
                     </td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         }
 
         // Filter payments
@@ -356,18 +370,28 @@
             const payment = payments.find(p => p.id === id);
             if (!payment) return;
 
+            const status = mapStatus(payment.status);
+
             document.getElementById('modalDetails').innerHTML = `
                 <div class="detail-row">
                     <span class="label">Reference</span>
-                    <span class="value">${payment.reference}</span>
+                    <span class="value">${payment.reference || 'N/A'}</span>
                 </div>
                 <div class="detail-row">
                     <span class="label">Customer</span>
-                    <span class="value">${payment.customer}</span>
+                    <span class="value">${payment.customer || 'Unknown'}</span>
                 </div>
                 <div class="detail-row">
                     <span class="label">Email</span>
-                    <span class="value">${payment.email}</span>
+                    <span class="value">${payment.email || '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Phone</span>
+                    <span class="value">${payment.phone || '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Provider</span>
+                    <span class="value">${payment.provider || '-'}</span>
                 </div>
                 <div class="detail-row">
                     <span class="label">Amount</span>
@@ -375,19 +399,44 @@
                 </div>
                 <div class="detail-row">
                     <span class="label">Method</span>
-                    <span class="value">${payment.method}</span>
+                    <span class="value">${payment.method || 'Mobile Money'}</span>
                 </div>
                 <div class="detail-row">
                     <span class="label">Date</span>
-                    <span class="value">${payment.date}</span>
+                    <span class="value">${payment.date || '-'}</span>
                 </div>
                 <div class="detail-row">
                     <span class="label">Status</span>
-                    <span class="value"><span class="status-badge status-${payment.status}">${payment.status.toUpperCase()}</span></span>
+                    <span class="value"><span class="status-badge status-${status}">${status.toUpperCase()}</span></span>
                 </div>
             `;
 
             document.getElementById('paymentModal').style.display = 'block';
+        }
+
+        // Confirm payment (Admin confirms they received the money)
+        async function confirmPayment(id) {
+            if (!confirm('Have you confirmed the payment on your phone? Mark as confirmed?')) return;
+
+            try {
+                const response = await fetch(`/api/payments/${id}/confirm`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Payment confirmed successfully!');
+                    loadPayments();
+                } else {
+                    alert(data.error || 'Failed to confirm payment');
+                }
+            } catch (error) {
+                alert('Error confirming payment: ' + error.message);
+            }
         }
 
         // Refund payment

@@ -12,7 +12,8 @@
 // ==========================================
 // CONFIGURATION
 // ==========================================
-const API_BASE_URL = 'http://localhost:5000/api';
+// Use relative path so it works on any host (local or deployed)
+const API_BASE_URL = '/api';
 
 // ==========================================
 // HELPER: Make API calls
@@ -100,6 +101,11 @@ async function loginUser(email, password) {
     localStorage.setItem('token', result.token);
     localStorage.setItem('user', JSON.stringify(result.user));
     
+    // Also save individual fields for pages that check them directly
+    localStorage.setItem('role', result.user.role);
+    localStorage.setItem('username', result.user.username);
+    localStorage.setItem('email', result.user.email);
+    
     return result;
 }
 
@@ -107,6 +113,9 @@ async function loginUser(email, password) {
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
     window.location.href = '/index.html';
 }
 

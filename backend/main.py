@@ -1095,6 +1095,26 @@ def serve_upload(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
+@app.route('/api/media/public', methods=['GET'])
+def get_public_media():
+    """Get all uploaded media files (Public - no auth needed)"""
+    media_list = []
+    
+    for subfolder in ['images', 'videos']:
+        folder = os.path.join(UPLOAD_FOLDER, subfolder)
+        if os.path.exists(folder):
+            for filename in os.listdir(folder):
+                filepath = os.path.join(folder, filename)
+                if os.path.isfile(filepath):
+                    media_list.append({
+                        'filename': filename,
+                        'url': f'/uploads/{subfolder}/{filename}',
+                        'type': 'image' if subfolder == 'images' else 'video'
+                    })
+    
+    return jsonify({'status': True, 'data': media_list}), 200
+
+
 # ============================================================
 # SERVE FRONTEND STATIC FILES
 # ============================================================
