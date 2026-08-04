@@ -157,6 +157,7 @@ function updateNavbar() {
                 <li><a href="/pages/admin-orders.html">Orders</a></li>
                 <li><a href="/pages/admin-customers.html">Customers</a></li>
                 <li><a href="/pages/admin-ads.html">Adverts</a></li>
+                <li><a href="/pages/admin-media.html">🖼️ Media</a></li>
                 <li><a href="#" onclick="logout()">Logout (${user.username})</a></li>
             `;
         } else {
